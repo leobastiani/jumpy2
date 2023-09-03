@@ -13,7 +13,7 @@ import TelemetryReporter from 'vscode-extension-telemetry';
 // @ts-ignore
 import elmApp from '../out/elm/StateMachineVSC';
 import { LabelEnvironment, Label, Settings } from './label-interface';
-import getWordLabels from './labelers/words';
+import getWordLabels, { WordLabel } from './labelers/words';
 import wordLabelDecorationType from './labelers/wordDecorations';
 import { createStatusBar, setStatusBar } from './statusPrinter';
 import { getKeySet, getAllKeys } from './keys';
@@ -45,6 +45,7 @@ const statusBarItem = createStatusBar();
 
 let allLabels: Array<Label> = new Array<Label>();
 let isSelectionMode: boolean = false;
+export const jumpedLabels: Array<WordLabel> = new Array<WordLabel>();
 
 // Subscribe:
 stateMachine.ports.validKeyEntered.subscribe((keyLabel: string) => {
@@ -85,8 +86,11 @@ function _renderLabels(enteredKey?: string) {
         return;
     }
 
+    const usedKeys = new Set(jumpedLabels.map((label) => label.keyLabel));
     const environment: LabelEnvironment = {
-        keys: [...getKeySet(getSettings().customKeys)],
+        keys: [...getKeySet(getSettings().customKeys)].filter((key) =>
+            !usedKeys.has(key)
+        ),
         settings: getSettings(),
     };
 
