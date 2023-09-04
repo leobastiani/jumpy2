@@ -134,16 +134,13 @@ function _clearLabels() {
     });
 }
 
-function _exit() {
+function exit() {
     commands.executeCommand('setContext', 'jumpy2.jump-mode', false);
     _clearLabels();
-}
-const _exitDebounced = debounce(_exit, 350, { leading: true, trailing: false });
-
-function exit() {
-    reporter.sendTelemetryEvent('exit-requested');
     stateMachine.ports.exit.send(null);
+
 }
+const _exitDebounced = debounce(exit, 350, { leading: true, trailing: false });
 
 function career() {
     const careerJumpsMade = (
@@ -208,7 +205,7 @@ export function activate(context: ExtensionContext) {
 }
 
 export function deactivate() {
-    _exit();
+    exit();
 
     statusBarItem.dispose();
 
