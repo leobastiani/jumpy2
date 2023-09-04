@@ -6,7 +6,7 @@ export interface Settings {
 }
 
 export interface LabelEnvironment {
-    keys: Array<string>;
+    keys: Generator<string, void, void>;
     settings: Settings;
 }
 

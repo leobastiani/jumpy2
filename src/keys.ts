@@ -1,5 +1,5 @@
 import range from 'lodash.range';
-import moize from 'moize';
+import { jumpedLabels } from './extension';
 
 export function getAllKeys(customKeys: ReadonlyArray<string>) {
     let lowerCharacters: Array<string> = [];
@@ -27,38 +27,32 @@ export function getAllKeys(customKeys: ReadonlyArray<string>) {
     };
 }
 
-function _getKeySet(customKeys: ReadonlyArray<string>) {
+function* _getKeySet(customKeys: ReadonlyArray<string>) {
     const { lowerCharacters, upperCharacters } = getAllKeys(customKeys);
 
-    const keys: Array<string> = [];
-
-    // A little ugly.
-    // I used itertools.permutation in python.
-    // Couldn't find a good one in npm.  Don't worry this takes < 1ms once.
     for (let c1 of lowerCharacters) {
         for (let c2 of lowerCharacters) {
-            keys.push(c1 + c2);
+            yield c1 + c2;
         }
     }
     for (let c1 of upperCharacters) {
         for (let c2 of lowerCharacters) {
-            keys.push(c1 + c2);
+            yield c1 + c2;
         }
     }
     for (let c1 of lowerCharacters) {
         for (let c2 of upperCharacters) {
-            keys.push(c1 + c2);
+            yield c1 + c2;
         }
     }
-
-    return <ReadonlyArray<string>>keys;
 }
 
-const memoized = moize(_getKeySet, {
-    isSerialized: true,
-    serializer: (args: ReadonlyArray<string>) => [JSON.stringify(args[0])],
-});
+export function* getKeySet(customKeys: ReadonlyArray<string>) {
+    const usedKeys = new Set(jumpedLabels.map((label) => label.keyLabel));
 
-export function getKeySet(customKeys: ReadonlyArray<string>) {
-    return memoized(customKeys);
+    for (const key of _getKeySet(customKeys)) {
+        if (!usedKeys.has(key)) {
+            yield key;
+        }
+    }
 }

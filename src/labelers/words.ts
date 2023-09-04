@@ -102,11 +102,11 @@ const labeler: Labeler = function (
             const lines = text.split(/\r?\n/);
             lines.forEach((line, index) => {
                 let word: any;
-                while (
-                    (word = env.settings.wordsPattern.exec(line)) !== null &&
-                    usedKeys.length
-                ) {
-                    const keyLabel = usedKeys.shift();
+                while ((word = env.settings.wordsPattern.exec(line)) !== null) {
+                    const keyLabel = usedKeys.next().value;
+                    if (!keyLabel) {
+                        break;
+                    }
 
                     const column = word.index;
                     const label = new WordLabel();

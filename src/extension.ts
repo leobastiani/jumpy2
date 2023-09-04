@@ -86,11 +86,8 @@ function _renderLabels(enteredKey?: string) {
         return;
     }
 
-    const usedKeys = new Set(jumpedLabels.map((label) => label.keyLabel));
     const environment: LabelEnvironment = {
-        keys: [...getKeySet(getSettings().customKeys)].filter((key) =>
-            !usedKeys.has(key)
-        ),
+        keys: getKeySet(getSettings().customKeys),
         settings: getSettings(),
     };
 
