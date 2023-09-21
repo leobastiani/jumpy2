@@ -1,10 +1,6 @@
-default: clean npm elm elm-build typescript
+default: clean elm elm-build typescript package install
 
-npm:
-	npm install -g npm@8.3.0
-	npm install
-
-elm: npm
+elm:
 	npm install elm@latest-0.19.1 --save-exact --save-dev
 
 elm-build:
